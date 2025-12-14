@@ -32,6 +32,18 @@ export const toggleFavoriteAPI = (id) => {
     return http.post(`/recipes/${id}/favorite`)
 }
 
-export const getAllRecipesAPI = (page = 1, pageSize = 20, search = '') => {
-    return http.get(`/recipes/all?page=${page}&pageSize=${pageSize}&search=${encodeURIComponent(search)}`)
+export const getAllRecipesAPI = (page = 1, pageSize = 20, search = '', author = '') => {
+    // 拼接 URL
+    let url = `/recipes/all?page=${page}&pageSize=${pageSize}`;
+
+    if (search) {
+        url += `&search=${encodeURIComponent(search)}`;
+    }
+
+    // 如果有 author，拼接到 URL 上
+    if (author) {
+        url += `&author=${author}`;
+    }
+
+    return http.get(url);
 }

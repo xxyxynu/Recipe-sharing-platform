@@ -53,15 +53,22 @@ const getRecipe = asyncHandler(async (req, res) => {
     res.status(200).json(recipe);
 });
 
-// 获取所有 recipes（可分页，可搜索）
 const getAllRecipes = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 20; // 默认20条
+    const pageSize = parseInt(req.query.pageSize) || 20;
     const search = req.query.search || '';
+    const author = req.query.author;
 
-    const query = search
-        ? { $text: { $search: search } } // 支持文本搜索 title/description/ingredients
-        : {};
+    let query = {};
+
+    if (search) {
+        query.$text = { $search: search };
+    }
+
+    // 如果传了 author ID，就只查这个作者的
+    if (author) {
+        query.author = author;
+    }
 
     const total = await Recipe.countDocuments(query);
 
