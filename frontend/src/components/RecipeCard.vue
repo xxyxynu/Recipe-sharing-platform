@@ -102,9 +102,6 @@ const goDetail = () => {
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    flex: 1;
-    height: 100%;
-    animation: slideIn 0.5s ease-out;
 }
 
 .card:hover {
@@ -196,7 +193,6 @@ h3 {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: auto;
 }
 
 .views {
