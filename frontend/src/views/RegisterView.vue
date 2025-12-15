@@ -2,7 +2,7 @@
     <div class="auth-page">
         <div class="auth-card">
             <div class="logo">
-                <img src="../assets/logo.jpg" alt="Logo" />
+                <img :src="logoImg" alt="Logo" />
             </div>
             <h2>Create Account</h2>
             <p class="subtitle">Sign up to get started</p>
@@ -70,7 +70,7 @@
             </form>
 
             <p class="signup">
-                Already have an account? <a href="/login">Login</a>
+                Already have an account? <router-link to="/login">Login</router-link>
             </p>
         </div>
     </div>
@@ -79,8 +79,9 @@
 <script setup>
 import { ref, reactive } from "vue";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-vue-next";
-import { registerAPI } from "../api/user";
+import { registerAPI } from "@/api/user";
 import { useRouter } from 'vue-router';
+import logoImg from '@/assets/logo.jpg'
 
 const router = useRouter();
 const name = ref("");

@@ -1,88 +1,82 @@
 <template>
     <div class="page-root">
-        <div ref="printableArea" class="printable-content">
-            <div class="hero">
-                <div class="hero-image">
-                    <img :src="recipe.image?.startsWith('http') ? recipe.image : (recipe.image?.startsWith('/') ? recipe.image : `/src/assets${recipe.image}`)" alt="recipe" crossorigin="anonymous" />
-                </div>
-
-                <div class="title-row">
-                    <div class="title-block">
-                        <h1 class="recipe-title">{{ recipe.title }}</h1>
-                        <div class="tag-row">
-                            <span v-for="tag in recipe.tags" :key="tag" class="tag-btn"># {{ tag }}</span>
-                        </div>
-                    </div>
-
-                    <div class="title-actions" data-html2canvas-ignore>
-                        <button class="icon-btn" @click="toggleLike">
-                            <Heart :stroke="isLiked ? '#ff6b35' : '#222'" :fill="isLiked ? '#ff6b35' : 'none'" />
-                        </button>
-                        <div class="share-wrapper">
-                            <button class="icon-btn" @click="handleShare">
-                                <Share2 />
-                            </button>
-                            <transition name="fade">
-                                <span v-if="showCopyTooltip" class="copy-tooltip">Link Copied!</span>
-                            </transition>
-                        </div>
-                    </div>
-                </div>
+        <div class="hero">
+            <div class="hero-image">
+                <img :src="getImageUrl(recipe.image)" alt="recipe" />
             </div>
 
-            <div class="meta-row">
-                <div class="meta-item"><strong>Prep</strong> {{ recipe.prepTime }} mins</div>
-                <div class="meta-item"><strong>Cook</strong> {{ recipe.cookTime }} mins</div>
-                <div class="meta-item"><strong>Serves</strong> {{ recipe.servings }} persons</div>
-                <div class="meta-item"><strong>Calories</strong> {{ recipe.calories }}</div>
-            </div>
-
-            <p class="short-desc">{{ recipe.description }}</p>
-
-            <div class="author-actions">
-                <div class="author-card" @click="goToChefProfile" style="cursor: pointer;">
-                    <img :src="recipe.author?.avatar?.startsWith('http') ? recipe.author.avatar : (recipe.author?.avatar?.startsWith('/') ? recipe.author.avatar : `/src/assets${recipe.author?.avatar || '/avatar.jpg'}`)" alt="author" class="author-avatar" />
-                    <div class="author-info">
-                        <div class="author-name">{{ recipe.author.username }}</div>
-                        <div class="author-role">{{ new Date(recipe.createdAt).toLocaleDateString() }}</div>
+            <div class="title-row">
+                <div class="title-block">
+                    <h1 class="recipe-title">{{ recipe.title }}</h1>
+                    <div class="tag-row">
+                        <span v-for="tag in recipe.tags" :key="tag" class="tag-btn"># {{ tag }}</span>
                     </div>
                 </div>
 
-                <div class="actions-group" data-html2canvas-ignore>
-                    <button class="btn-outline" @click="downloadPDF">Download PDF</button>
-                    <button class="btn-ghost" @click="viewMore">More Recipes →</button>
+                <div class="title-actions">
+                    <button class="icon-btn" @click="toggleLike">
+                        <Heart :stroke="isLiked ? '#ff6b35' : '#222'" :fill="isLiked ? '#ff6b35' : 'none'" />
+                    </button>
+                    <button class="icon-btn" @click="onShare">
+                        <Share2 />
+                    </button>
                 </div>
             </div>
-
-            <div class="content-grid">
-                <section class="ingredients">
-                    <h2>Ingredients</h2>
-                    <ul>
-                        <li v-for="(ing, i) in recipe.ingredients" :key="i">{{ ing }}</li>
-                    </ul>
-                </section>
-
-                <section class="nutrition">
-                    <h2>Nutrition</h2>
-                    <ul>
-                        <li v-for="(n, i) in recipe.nutrition" :key="i">{{ n }}</li>
-                    </ul>
-                </section>
-
-            </div>
-
-            <section class="instructions">
-                <h2>Cooking <span>Instructions</span></h2>
-                <div class="step">
-                    <div v-for="(step, idx) in recipe.instructions" :key="idx" class="step-card">
-                        <!-- <div class="step-index">{{ idx + 1 }}</div> -->
-                        <div class="step-body">
-                            <p class="step-text">{{ step }}</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
+
+        <div class="meta-row">
+            <div class="meta-item"><strong>Prep</strong> {{ recipe.prepTime }} mins</div>
+            <div class="meta-item"><strong>Cook</strong> {{ recipe.cookTime }} mins</div>
+            <div class="meta-item"><strong>Serves</strong> {{ recipe.servings }} persons</div>
+            <div class="meta-item"><strong>Calories</strong> {{ recipe.calories }}</div>
+        </div>
+
+        <p class="short-desc">{{ recipe.description }}</p>
+
+        <div class="author-actions">
+            <div class="author-card">
+                <img :src="getImageUrl(recipe.author.avatar)" alt="author" class="author-avatar" />
+                <div class="author-info">
+                    <div class="author-name">{{ recipe.author.username }}</div>
+                    <div class="author-role">{{ new Date(recipe.createdAt).toLocaleDateString() }}</div>
+                </div>
+            </div>
+
+            <div class="actions-group">
+                <button class="btn-outline" @click="downloadPDF">Download PDF</button>
+                <button class="btn-ghost" @click="viewMore">More Recipes →</button>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <section class="ingredients">
+                <h2>Ingredients</h2>
+                <ul>
+                    <li v-for="(ing, i) in recipe.ingredients" :key="i">{{ ing }}</li>
+                </ul>
+            </section>
+
+            <section class="nutrition">
+                <h2>Nutrition</h2>
+                <ul>
+                    <li v-for="(n, i) in recipe.nutrition" :key="i">{{ n }}</li>
+                </ul>
+            </section>
+
+        </div>
+
+        <section class="instructions">
+            <h2>Cooking <span>Instructions</span></h2>
+            <div class="step">
+                <div v-for="(step, idx) in recipe.instructions" :key="idx" class="step-card">
+                    <!-- <div class="step-index">{{ idx + 1 }}</div> -->
+                    <div class="step-body">
+                        <p class="step-text">{{ step }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="reviews">
             <h2>Cooking <span>Reviews</span></h2>
             <div v-if="reviews.length" class="review-list">
@@ -117,14 +111,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { Heart, Share2 } from 'lucide-vue-next'
 import { getRecipeAPI } from '@/api/recipe'
 import { addFavoriteAPI, removeFavoriteAPI, getFavoritesAPI } from '@/api/user'
-import { mockAPI } from '@/mocks/mockData'
-import html2pdf from 'html2pdf.js'
+import { getImageUrl } from '@/utils/imageHelper'
 
-const router = useRouter()
 const route = useRoute()
 const recipeId = route.params.id // 从路由拿到 ID
 const recipe = ref({
@@ -146,28 +138,14 @@ const recipe = ref({
 const isLiked = ref(false)
 const reviews = ref([])
 const related = ref([])
-const printableArea = ref(null) // 绑定 DOM
-const isGeneratingPdf = ref(false)
-
-const showCopyTooltip = ref(false)
-
-const goToChefProfile = () => {
-    if (recipe.value?.author?._id) {
-        router.push(`/chef/${recipe.value.author._id}`);
-    }
-}
 
 const fetchRecipe = async () => {
     try {
         const res = await getRecipeAPI(recipeId)
         recipe.value = res
 
-        // Load reviews from mock data if using mock mode
-        if (import.meta.env.VITE_USE_MOCK === 'true' || !import.meta.env.VITE_API_URL) {
-            reviews.value = mockAPI.getReviews(recipeId) || []
-        } else {
-            reviews.value = res.reviews || []
-        }
+        // 如果后端返回 reviews 或 related，初始化
+        reviews.value = res.reviews || []
         //related.value = res.related || []
     } catch (err) {
         console.error('Failed to fetch recipe:', err)
@@ -201,81 +179,16 @@ const toggleLike = async () => {
     }
 }
 
-const handleShare = async () => {
-    const shareData = {
-        title: recipe.value.title,
-        text: `Check out this delicious recipe: ${recipe.value.title} by ${recipe.value.author?.username || 'a chef'}`,
-        url: window.location.href
-    }
-
-    // Try native share API (works on mobile and some desktop browsers)
-    if (navigator.share && navigator.share instanceof Function) {
-        try {
-            await navigator.share(shareData)
-            console.log('Shared successfully')
-            return
-        } catch (err) {
-            // User cancelled share - don't treat as error
-            if (err.name === 'AbortError') {
-                return
-            }
-            console.error('Error sharing:', err)
-            // Fall through to clipboard method
-        }
-    }
-    
-    // Fallback: Copy to clipboard (for desktop browsers)
-    try {
-        await navigator.clipboard.writeText(shareData.url)
-        // Show "Link Copied!" tooltip
-        showCopyTooltip.value = true
-        setTimeout(() => {
-            showCopyTooltip.value = false
-        }, 2000)
-    } catch (err) {
-        console.error('Failed to copy:', err)
-        // Final fallback: show URL in alert
-        alert(`Share this recipe: ${shareData.url}`)
-    }
+function onShare() {
+    alert('Share link copied!')
 }
 
-const downloadPDF = () => {
-    isGeneratingPdf.value = true
-
-    const element = printableArea.value
-    const opt = {
-        margin: [10, 10, 10, 10], // 上右下左边距 (mm)
-        filename: `${recipe.value.title.replace(/\s+/g, '_')}_Recipe.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2, // 提高清晰度
-            useCORS: true, // 允许跨域加载图片
-            scrollY: 0 // 防止滚动条偏移导致截图不全
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    html2pdf()
-        .set(opt)
-        .from(element)
-        .save()
-        .then(() => {
-            isGeneratingPdf.value = false
-        })
-        .catch(err => {
-            console.error('PDF Generation failed:', err)
-            isGeneratingPdf.value = false
-        })
+function downloadPDF() {
+    alert('Downloading PDF... (mock)')
 }
 
 function viewMore() {
-    if (recipe.value && recipe.value.author) {
-        // 跳转到 /recipes 页面，并带上查询参数 author
-        router.push({
-            path: '/recipes',
-            query: { author: recipe.value.author._id }
-        })
-    }
+    alert('View more recipes (mock)')
 }
 </script>
 
@@ -333,70 +246,29 @@ function viewMore() {
     align-items: center;
 }
 
-.share-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
 .icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    transition: background 0.2s;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    border: none;
+    background: #fff;
+    padding: 6px;
+    border-radius: 8px;
+    box-shadow: 0 6px 14px rgba(17, 17, 17, 0.06);
+    cursor: pointer;
 }
 
-.icon-btn:hover {
-    background-color: #f0f0f0;
-}
-
-.icon {
+.icon-btn svg {
     width: 20px;
     height: 20px;
-    stroke: #333;
+    stroke: #222;
 }
 
-.copy-tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 12px;
-    white-space: nowrap;
-    margin-bottom: 8px;
-    pointer-events: none;
-    z-index: 10;
+.icon-btn:hover svg {
+    stroke: var(--accent);
 }
 
-.copy-tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -4px;
-    border-width: 4px;
-    border-style: solid;
-    border-color: #333 transparent transparent transparent;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-
+/* meta row */
 .meta-row {
     display: flex;
     gap: 18px;
