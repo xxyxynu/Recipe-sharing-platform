@@ -5,7 +5,7 @@ import { useUserStore } from '../stores/userStore'
 import router from '@/router'
 
 const httpInstance = axios.create({
-  baseURL: 'http://172.20.10.3:5001', // ✅ 确保和你的后端一致
+  baseURL: import.meta.env.VITE_API_URL || 'http://172.20.10.3:5001', // ✅ 确保和你的后端一致
   timeout: 5000,
   withCredentials: true // ✅ 允许携带 refreshToken Cookie
 })

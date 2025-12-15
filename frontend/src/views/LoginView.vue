@@ -2,7 +2,7 @@
     <div class="auth-page">
         <div class="auth-card">
             <div class="logo">
-                <img src="../assets/logo.jpg" alt="Logo" />
+                <img :src="logoImg" alt="Logo" />
             </div>
             <h2>Welcome Back</h2>
             <p class="subtitle">Login to your account</p>
@@ -22,11 +22,13 @@
                     <a href="#">Forgot password?</a>
                 </div>
 
-                <button type="submit">Login</button>
+                <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+                <button type="submit" :disabled="loading">{{ loading ? 'Logging in...' : 'Login' }}</button>
             </form>
 
             <p class="signup">
-                Don't have an account? <a href="/register">Sign Up</a>
+                Don't have an account? <router-link to="/register">Sign Up</router-link>
             </p>
         </div>
     </div>
@@ -38,18 +40,30 @@ import { Mail, Lock } from "lucide-vue-next";
 import { loginAPI } from '@/api/user'
 import { useUserStore } from '@/stores/userStore'
 import { useRouter } from 'vue-router'
+import logoImg from '@/assets/logo.jpg'
 
 const userStore = useUserStore()
 const router = useRouter()
 
 const email = ref("");
 const password = ref("");
-
+const loading = ref(false);
+const errorMessage = ref("");
 
 const login = async () => {
+    // Reset error message
+    errorMessage.value = "";
+    
+    // Basic validation
+    if (!email.value || !password.value) {
+        errorMessage.value = "Please fill in all fields";
+        return;
+    }
+
+    loading.value = true;
     try {
         const res = await loginAPI({
-            email: email.value,
+            email: email.value.trim(),
             password: password.value
         })
         // Handle both formats: { user, token } or { ...user, token }
@@ -63,6 +77,9 @@ const login = async () => {
         router.push('/')
     } catch (err) {
         console.error("login error", err)
+        errorMessage.value = err.response?.data?.message || err.message || "Login failed. Please check your credentials and try again.";
+    } finally {
+        loading.value = false;
     }
 };
 </script>
@@ -163,9 +180,26 @@ button {
     transition: all 0.3s ease;
 }
 
-button:hover {
+button:hover:not(:disabled) {
     background: var(--btn-color-hover);
     transform: translateY(-2px);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #c62828;
+    font-size: 13px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    text-align: left;
+    padding: 8px;
+    background: #ffebee;
+    border-radius: 4px;
+    border-left: 3px solid #c62828;
 }
 
 .signup {

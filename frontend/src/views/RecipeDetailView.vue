@@ -2,7 +2,7 @@
     <div class="page-root">
         <div class="hero">
             <div class="hero-image">
-                <img :src="`http://localhost:5001${recipe.image}`" alt="recipe" />
+                <img :src="getImageUrl(recipe.image)" alt="recipe" />
             </div>
 
             <div class="title-row">
@@ -35,7 +35,7 @@
 
         <div class="author-actions">
             <div class="author-card">
-                <img :src="`http://localhost:5001${recipe.author.avatar}`" alt="author" class="author-avatar" />
+                <img :src="getImageUrl(recipe.author.avatar)" alt="author" class="author-avatar" />
                 <div class="author-info">
                     <div class="author-name">{{ recipe.author.username }}</div>
                     <div class="author-role">{{ new Date(recipe.createdAt).toLocaleDateString() }}</div>
@@ -115,6 +115,7 @@ import { useRoute } from 'vue-router'
 import { Heart, Share2 } from 'lucide-vue-next'
 import { getRecipeAPI } from '@/api/recipe'
 import { addFavoriteAPI, removeFavoriteAPI, getFavoritesAPI } from '@/api/user'
+import { getImageUrl } from '@/utils/imageHelper'
 
 const route = useRoute()
 const recipeId = route.params.id // 从路由拿到 ID

@@ -1,7 +1,7 @@
 <template>
     <div class="card">
         <div class="image-container">
-            <img :src="recipe.image?.startsWith('http') ? recipe.image : (recipe.image?.startsWith('/') ? recipe.image : `/src/assets${recipe.image}`)" alt="Recipe image" />
+            <img :src="getImageUrl(recipe.image)" alt="Recipe image" />
             <button class="fav-btn" @click="toggleFavorite">
                 <Heart :fill="isFavorite ? '#ff7f50' : 'none'" stroke="#ff7f50" />
             </button>
@@ -31,6 +31,7 @@ import { ref, onMounted, onUnmounted, onUpdated, defineProps } from "vue";
 import { Heart, Eye } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 import { addFavoriteAPI, removeFavoriteAPI, getFavoritesAPI } from '@/api/user'
+import { getImageUrl } from '@/utils/imageHelper'
 
 const router = useRouter();
 const props = defineProps({ recipe: Object });
