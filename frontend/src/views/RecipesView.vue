@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { Heart, Share2 } from 'lucide-vue-next'
 import { getPopularRecipesAPI, getLatestRecipesAPI, getAllRecipesAPI } from '@/api/recipe'
 
@@ -97,6 +97,7 @@ const featured = ref({})
 const recommended = ref([])
 const popularTags = ref([])
 
+import { onMounted } from 'vue'
 onMounted(async () => {
     try {
         // 热门菜谱
