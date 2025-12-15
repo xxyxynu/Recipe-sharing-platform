@@ -6,6 +6,7 @@ const userRoutes = require('./routes/userRoutes');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const recipeRoutes = require('./routes/recipeRoutes');
+const chefRoutes = require('./routes/chefRoutes');
 
 dbConnections();
 
@@ -20,27 +21,30 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', message: 'Server is running' });
+});
+
 app.use("/users", userRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use('/recipes', recipeRoutes);
+app.use('/chefs', chefRoutes);
 
-// Serve static files from frontend build (for production)
-if (process.env.NODE_ENV === 'production') {
-    const path = require('path');
-    app.use(express.static(path.join(__dirname, 'public')));
-    
-    // Handle Vue Router - serve index.html for all non-API routes
-    // Use regex pattern for Express 5 compatibility
-    app.get(/.*/, (req, res) => {
-        // Don't serve index.html for API routes
-        if (req.path.startsWith('/users') || 
-            req.path.startsWith('/recipes') || 
-            req.path.startsWith('/uploads')) {
-            return res.status(404).json({ message: 'Not found' });
+// Root endpoint
+app.get('/', (req, res) => {
+    res.json({ 
+        message: 'Recipe Sharing Platform API', 
+        version: '1.0.0',
+            endpoints: {
+            health: '/health',
+            users: '/users',
+            recipes: '/recipes',
+            chefs: '/chefs',
+            uploads: '/uploads'
         }
-        res.sendFile(path.join(__dirname, 'public', 'index.html'));
     });
-}
+});
 
 app.use(errorHandler);
 

@@ -42,14 +42,14 @@ export const getFollowingAPI = () => {
     if (USE_MOCK) {
         return mockAPI.getFollowing()
     }
-    return http.get('/chefs/following')
+    return http.get('/chefs/following/list')
 }
 
 export const isFollowingAPI = (chefId) => {
     if (USE_MOCK) {
         return mockAPI.isFollowing(chefId)
     }
-    return http.get(`/chefs/${chefId}/following`)
+    return http.get(`/chefs/following/check/${chefId}`)
 }
 
 export const getChefsByRecipeAPI = (recipeId) => {
