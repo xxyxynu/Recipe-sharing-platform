@@ -9,7 +9,7 @@ const createRecipe = asyncHandler(async (req, res) => {
         prepTime, cookTime, servings, calories, instructions
     } = req.body;
 
-    const image = req.file ? `/uploads/recipes/${req.file.filename}` : null;
+    const image = req.file ? req.file.path : null; // Cloudinary 会直接返回 https://...
 
     if (!title || !description || !ingredients) {
         res.status(400);
@@ -149,7 +149,7 @@ const updateRecipe = asyncHandler(async (req, res) => {
 
     // 🔹 处理图片文件
     if (req.file) {
-        recipe.image = `/uploads/recipes/${req.file.filename}`;
+        recipe.image = req.file.path
     }
 
     await recipe.save();

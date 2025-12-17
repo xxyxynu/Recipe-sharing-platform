@@ -1,36 +1,21 @@
 const multer = require('multer');
-const path = require('path');
 const User = require('../models/userModel');
+const { avatarStorage } = require('../config/cloudinary'); // 引入配置
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/avatars');
-    },
-    filename: function (req, file, cb) {
-        const ext = path.extname(file.originalname);
-        cb(null, `${Date.now()}-${file.fieldname}${ext}`);
-    }
-});
-
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-        cb(null, true);
-    } else {
-        cb(new Error('Only image files are allowed'), false);
-    }
-};
-
-const upload = multer({ storage, fileFilter });
+// 使用 Cloudinary storage
+const upload = multer({ storage: avatarStorage });
 
 const uploadAvatar = async (req, res) => {
-    if (!req.file) {
+    // 注意：使用 Cloudinary 后，req.file.path 就是图片的完整 http 网址
+    if (!req.file || !req.file.path) {
         return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const imageUrl = `/uploads/avatars/${req.file.filename}`;
-
     try {
-        const userId = req.user.id; // 登录状态下，从 token 中间件获取
+        const userId = req.user.id;
+        // 直接存入 Cloudinary 返回的完整 URL
+        const imageUrl = req.file.path;
+
         const user = await User.findByIdAndUpdate(userId, { avatar: imageUrl }, { new: true });
 
         if (!user) {
@@ -38,7 +23,7 @@ const uploadAvatar = async (req, res) => {
         }
 
         return res.status(200).json({
-            message: 'Avatar uploaded and user updated',
+            message: 'Avatar uploaded',
             avatar: user.avatar,
             username: user.username,
         });

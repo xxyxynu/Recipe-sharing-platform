@@ -1,24 +1,7 @@
 const multer = require('multer');
-const path = require('path');
+const { recipeStorage } = require('../config/cloudinary'); // 引入刚才写的配置
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/recipes');
-    },
-    filename: function (req, file, cb) {
-        const ext = path.extname(file.originalname);
-        cb(null, `${Date.now()}-${file.fieldname}${ext}`);
-    }
-});
-
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-        cb(null, true);
-    } else {
-        cb(new Error('Only image files are allowed'), false);
-    }
-};
-
-const uploadRecipeImage = multer({ storage, fileFilter });
+// 直接使用 Cloudinary storage，不需要 diskStorage 了
+const uploadRecipeImage = multer({ storage: recipeStorage });
 
 module.exports = uploadRecipeImage;
