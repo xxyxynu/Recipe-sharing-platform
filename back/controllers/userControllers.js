@@ -235,8 +235,9 @@ const getFavorites = asyncHandler(async (req, res) => {
 const getMyRecipes = asyncHandler(async (req, res) => {
     const userId = req.user.id;
 
-    const recipes = await Recipe.find({ author: userId }).sort({ createdAt: -1 });
-    // 如果你想返回选定字段，可以用 .select('title description image tags ...')
+    const recipes = await Recipe.find({ author: userId })
+        .sort({ createdAt: -1 })
+        .populate('author', 'username avatar'); // ✅ 添加这一行
 
     res.status(200).json(recipes);
 });
