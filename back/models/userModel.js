@@ -31,25 +31,13 @@ const userSchema = new mongoose.Schema({
         default: '',
     },
     favoriteRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Recipe' }],
-<<<<<<< HEAD:backend/models/userModel.js
-    followers: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
-    following: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }]
-=======
     bio: {
         type: String,
-        default: 'Hello, I love cooking!', // 默认简介
+        default: 'Hello, I love cooking!',
         maxlength: 100
     },
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // 谁关注了我
-    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]  // 我关注了谁
-}, {
->>>>>>> f806cdb (updated front and back):back/models/userModel.js
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 }, {
     timestamps: true
 })

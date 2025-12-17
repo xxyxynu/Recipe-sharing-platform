@@ -75,19 +75,15 @@ const props = defineProps({
 });
 
 const imageUrl = computed(() => {
-    // 把 via.placeholder.com 换成 placehold.co
     if (!props.recipe.image) return 'https://placehold.co/400x300?text=No+Image';
     if (props.recipe.image.startsWith('http')) return props.recipe.image;
     return `http://localhost:5000${props.recipe.image}`;
 });
 
-// 修改这里：加载失败时的图
 const handleImageError = (e) => {
-    // 把 via.placeholder.com 换成 placehold.co
     e.target.src = 'https://placehold.co/400x300?text=Food';
 };
 
-// 处理作者头像路径
 const getAvatarUrl = (path) => {
     if (!path) return '';
     if (path.startsWith('http')) return path;

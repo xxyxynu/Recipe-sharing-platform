@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+console.log('当前环境API地址:', import.meta.env.VITE_API_URL);
+
 // 创建 axios 实例
 const api = axios.create({
   // 如果 VITE_API_URL 存在（线上），就用线上的；否则用本地的
