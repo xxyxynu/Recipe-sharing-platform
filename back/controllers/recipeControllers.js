@@ -59,12 +59,6 @@ const getAllRecipes = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 20; // 默认20条
     const search = req.query.search || '';
-<<<<<<< HEAD:backend/controllers/recipeControllers.js
-
-    const query = search
-        ? { $text: { $search: search } } // 支持文本搜索 title/description/ingredients
-        : {};
-=======
     const category = req.query.category;
     const author = req.query.author;
     const sort = req.query.sort || 'latest'; // 👈 1. 获取 sort 参数 (默认 latest)
@@ -78,7 +72,6 @@ const getAllRecipes = asyncHandler(async (req, res) => {
     if (author) {
         query.author = author;
     }
->>>>>>> f806cdb (updated front and back):back/controllers/recipeControllers.js
 
     if (category && category !== 'All') {
         query.category = category;
