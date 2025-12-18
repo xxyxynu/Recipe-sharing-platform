@@ -1,0 +1,36 @@
+/* src/assets/main.css */
+:root {
+    --primary-color: #059669;
+    /* emerald-600 */
+    --primary-hover: #047857;
+    /* emerald-700 */
+    --text-main: #111827;
+    /* gray-900 */
+    --text-secondary: #4b5563;
+    /* gray-600 */
+    --text-light: #9ca3af;
+    /* gray-400 */
+    --bg-gray: #f9fafb;
+    /* gray-50 */
+    --bg-white: #ffffff;
+    --border-color: #e5e7eb;
+    /* gray-200 */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-full: 9999px;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-gray);
+    color: var(--text-main);
+}
+
+button {
+    cursor: pointer;
+}

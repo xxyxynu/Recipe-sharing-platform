@@ -6,12 +6,6 @@
 
         <div v-else class="bg-white rounded-xl shadow-lg p-8">
             <h1 class="text-3xl font-bold mb-6">Edit Recipe</h1>
-
-            <!-- 这里为了代码简洁，我只写关键逻辑。
-           实际上你应该把 CreateRecipeView 里的 <form> 复制过来，
-           然后绑定到下面的 form 数据上。
-           唯一的区别是提交时调用 updateRecipe 而不是 createRecipe
-      -->
             <form @submit.prevent="handleUpdate" class="space-y-6">
                 <!-- 标题 -->
                 <div>
@@ -24,11 +18,6 @@
                     <label class="block text-sm font-medium text-gray-700">Description</label>
                     <textarea v-model="form.description" rows="3" required class="w-full border p-2 rounded"></textarea>
                 </div>
-
-                <!-- 注意：完整的编辑页面需要把 CreateRecipeView 里的所有 Ingredients, Instructions 逻辑都搬过来。
-              为了节省篇幅，这里假设你已经把 CreateRecipeView 的 Template 复制过来了。
-              重点是 script 部分的回填逻辑。
-         -->
 
                 <div class="flex justify-end gap-4">
                     <button type="button" @click="$router.back()" class="text-gray-500">Cancel</button>

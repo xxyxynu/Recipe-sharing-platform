@@ -9,7 +9,7 @@
             <!-- 头部信息 -->
             <div
                 class="bg-white rounded-xl shadow-lg p-8 mb-8 text-center sm:text-left flex flex-col sm:flex-row items-center gap-8">
-                <img :src="getAvatarUrl(chef.avatar)"
+                <img :src="getImageUrl(chef.avatar)"
                     class="w-32 h-32 rounded-full object-cover border-4 border-emerald-100">
 
                 <div class="flex-1">
@@ -61,6 +61,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useChefStore } from '../stores/chef';
 import { useAuthStore } from '../stores/auth';
 import RecipeCard from '../components/RecipeCard.vue';
+import { getImageUrl } from '../utils/imageHelper';
 
 const route = useRoute();
 const router = useRouter();
@@ -77,12 +78,6 @@ const amIFollowing = computed(() => {
 onMounted(() => {
     chefStore.fetchChefDetail(route.params.id);
 });
-
-const getAvatarUrl = (path) => {
-    if (!path) return 'https://placehold.co/150x150?text=Chef';
-    if (path.startsWith('http')) return path;
-    return `http://localhost:5000${path}`;
-};
 
 const handleFollow = async () => {
     if (!authStore.isAuthenticated) {

@@ -46,15 +46,19 @@
                                     <span>By {{ recipe.author?.username || 'Unknown' }}</span>
                                 </div>
                                 <span class="mx-3">•</span>
-                                <span>{{ formatDate(recipe.createdAt) }}</span>
+                                <span :title="timeAgo(recipe.createdAt)">
+                                    {{ formatDate(recipe.createdAt) }}
+                                    <span class="text-xs text-gray-400 ml-1">({{ timeAgo(recipe.createdAt) }})</span>
+                                </span>
                             </div>
                         </div>
 
-                        <!-- 收藏按钮 (带动画) -->
                         <button @click="handleFavorite"
                             class="p-3 rounded-full backdrop-blur-md transition-all duration-300 shadow-lg transform active:scale-95"
-                            :class="isFavorited ? 'bg-white text-red-500 scale-110' : 'bg-black/40 text-white hover:bg-white hover:text-red-500'"
-                            title="Add to Favorites">
+                            :class="[
+                                isFavorited ? 'bg-white text-red-500' : 'bg-black/40 text-white hover:bg-white hover:text-red-500',
+                                isFavorited ? 'animate-heart-pop' : ''
+                            ]" title="Add to Favorites">
                             <svg class="w-7 h-7" :fill="isFavorited ? 'currentColor' : 'none'" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -161,24 +165,7 @@
                     <!-- 评论列表 -->
                     <div v-if="recipe.reviews && recipe.reviews.length > 0"
                         class="space-y-6 mb-8 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
-                        <div v-for="review in recipe.reviews" :key="review._id" class="bg-gray-50 p-4 rounded-lg">
-                            <div class="flex items-center justify-between mb-3">
-                                <div class="flex items-center">
-                                    <div
-                                        class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center text-xs font-bold text-gray-600 overflow-hidden">
-                                        <img v-if="review.user?.avatar" :src="getImageUrl(review.user.avatar)"
-                                            class="w-full h-full object-cover">
-                                        <span v-else>{{ review.user?.username?.charAt(0).toUpperCase() }}</span>
-                                    </div>
-                                    <span class="ml-2 font-bold text-gray-800 text-sm">{{ review.user?.username ||
-                                        'Anonymous' }}</span>
-                                </div>
-                                <div class="flex text-yellow-400 text-sm">
-                                    <span v-for="n in 5" :key="n">{{ n <= review.rating ? '★' : '☆' }}</span>
-                                </div>
-                            </div>
-                            <p class="text-gray-600 text-sm pl-10">{{ review.comment }}</p>
-                        </div>
+                        <ReviewItem v-for="review in recipe.reviews" :key="review._id" :review="review" />
                     </div>
 
                     <div v-else class="text-center py-8 text-gray-400 bg-gray-50 rounded-lg mb-6">
@@ -223,14 +210,18 @@
 import { onMounted, computed, reactive, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useRecipeStore } from '../stores/recipe';
-import { useAuthStore } from '../stores/auth'; // 🔴 必须引入，否则收藏功能报错
+import { useAuthStore } from '../stores/auth';
+import { getImageUrl } from '../utils/imageHelper';
+import { useDateFormatter } from '../composables/useDateFormatter';
+import ReviewItem from '../components/ReviewItem.vue';
 
 const route = useRoute();
 const router = useRouter();
 const recipeStore = useRecipeStore();
 const authStore = useAuthStore();
 
-// 1. 获取 ID，如果没有 ID，store 可能会报错，所以要小心
+const { formatDate, timeAgo } = useDateFormatter();
+
 const recipeId = route.params.id;
 
 const reviewForm = reactive({
@@ -275,24 +266,10 @@ const isFavorited = computed(() => {
     return recipe.value.favorites.some(id => id.toString() === currentUserId.toString());
 });
 
-// 4. 图片处理 (带默认值)
-const getImageUrl = (path) => {
-    if (!path) return 'https://placehold.co/800x600?text=No+Image'; // 默认图
-    if (path.startsWith('http')) return path; // 网络图片
-    return `http://localhost:5000${path}`; // 本地上传图片
-};
 
 // 图片加载失败的回退
 const handleImageError = (e) => {
     e.target.src = 'https://placehold.co/800x600?text=Food';
-};
-
-// 格式化日期
-const formatDate = (dateString) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric'
-    });
 };
 
 // 5. 交互动作
@@ -326,7 +303,29 @@ const submitReview = async () => {
 </script>
 
 <style scoped>
-/* 自定义滚动条样式 */
+@keyframes heartPop {
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.4);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.animate-heart-pop {
+    animation: heartPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 自定义滚动条样式*/
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
 }

@@ -68,7 +68,7 @@
 
                     <!-- 头像 -->
                     <div class="relative w-24 h-24 mb-4">
-                        <img :src="getAvatarUrl(chef.avatar)"
+                        <img :src="getImageUrl(chef.avatar)"
                             class="w-full h-full rounded-full object-cover border-4 border-emerald-50 transition transform group-hover:scale-105">
                     </div>
 
@@ -122,6 +122,7 @@ import { onMounted, ref, computed } from 'vue';
 import { useChefStore } from '../stores/chef';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
+import { getImageUrl } from '../utils/imageHelper';
 
 const chefStore = useChefStore();
 const authStore = useAuthStore();
@@ -155,12 +156,6 @@ onMounted(() => {
 const handleSearch = () => {
     // 搜索时，无论在哪个 Tab，都去后端搜，搜完后 computed 会自动过滤
     chefStore.fetchAllChefs(searchQuery.value);
-};
-
-const getAvatarUrl = (path) => {
-    if (!path) return 'https://placehold.co/150x150?text=Chef';
-    if (path.startsWith('http')) return path;
-    return `http://localhost:5000${path}`;
 };
 
 const isFollowing = (chef) => {

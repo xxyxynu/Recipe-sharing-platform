@@ -1,75 +1,176 @@
 <template>
-    <div class="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
-            <div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Sign in to your account
-                </h2>
-                <p class="mt-2 text-center text-sm text-gray-600">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>Sign in to your account</h2>
+                <p>
                     Or
-                    <router-link to="/register" class="font-medium text-emerald-600 hover:text-emerald-500">
-                        create a new account
-                    </router-link>
+                    <router-link to="/register" class="link">create a new account</router-link>
                 </p>
             </div>
 
-            <!-- 错误提示 -->
-            <div v-if="authStore.error" class="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
-                <div class="flex">
-                    <div class="ml-3">
-                        <p class="text-sm text-red-700">{{ authStore.error }}</p>
-                    </div>
-                </div>
+            <div v-if="authStore.error" class="error-alert">
+                <p>{{ authStore.error }}</p>
             </div>
 
-            <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-                <div class="rounded-md shadow-sm -space-y-px">
-                    <div class="mb-4">
-                        <label for="email-address" class="sr-only">Email address</label>
-                        <input id="email-address" name="email" type="email" v-model="email" required
-                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-                            placeholder="Email address" />
-                    </div>
-                    <div>
-                        <label for="password" class="sr-only">Password</label>
-                        <input id="password" name="password" type="password" v-model="password" required
-                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-                            placeholder="Password" />
-                    </div>
+            <form @submit.prevent="handleLogin" class="auth-form">
+                <div class="input-group">
+                    <label for="email" class="sr-only">Email address</label>
+                    <input id="email" type="email" v-model="email" required placeholder="Email address"
+                        class="input-top" />
+
+                    <label for="password" class="sr-only">Password</label>
+                    <input id="password" type="password" v-model="password" required placeholder="Password"
+                        class="input-bottom" />
                 </div>
 
-                <div>
-                    <button type="submit" :disabled="authStore.loading"
-                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span v-if="authStore.loading">Signing in...</span>
-                        <span v-else>Sign in</span>
-                    </button>
-                </div>
+                <BaseButton type="submit" :loading="authStore.loading" class="w-full">
+                    Sign in
+                </BaseButton>
             </form>
         </div>
     </div>
 </template>
 
 <script setup>
+// Script 保持不变
 import { ref } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
+import BaseButton from '../components/BaseButton.vue';
 
 const authStore = useAuthStore();
 const router = useRouter();
-
 const email = ref('');
 const password = ref('');
 
 const handleLogin = async () => {
-    const success = await authStore.login({
-        email: email.value,
-        password: password.value
-    });
-
-    if (success) {
-        // 登录成功，跳转到首页
-        router.push('/');
-    }
+    const success = await authStore.login({ email: email.value, password: password.value });
+    if (success) router.push('/');
 };
 </script>
+
+<style scoped>
+.auth-container {
+    min-height: calc(100vh - 4rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 28rem;
+    /* max-w-md */
+    background-color: var(--bg-white);
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+}
+
+.auth-header h2 {
+    text-align: center;
+    font-size: 1.875rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.link {
+    font-weight: 500;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.link:hover {
+    color: var(--primary-hover);
+}
+
+.error-alert {
+    background-color: #fef2f2;
+    border-left: 4px solid #ef4444;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    color: #b91c1c;
+    font-size: 0.875rem;
+}
+
+.auth-form {
+    margin-top: 2rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    outline: none;
+    box-sizing: border-box;
+    /* 重要 */
+}
+
+.input-group input:focus {
+    border-color: var(--primary-color);
+    z-index: 10;
+}
+
+.input-top {
+    border-top-left-radius: var(--radius-md);
+    border-top-right-radius: var(--radius-md);
+    margin-bottom: -1px;
+}
+
+.input-bottom {
+    border-bottom-left-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+}
+
+.btn-primary {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+</style>

@@ -36,7 +36,21 @@ const routes = [
         path: '/profile',
         name: 'Profile',
         component: () => import('../views/ProfileView.vue'),
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
+        children: [
+            {
+                path: '',
+                redirect: '/profile/recipes'
+            },
+            {
+                path: 'recipes',
+                component: () => import('../views/profile/MyRecipes.vue')
+            },
+            {
+                path: 'favorites',
+                component: () => import('../views/profile/MyFavorites.vue')
+            }
+        ]
     },
     {
         path: '/edit-recipe/:id',
