@@ -192,8 +192,6 @@ import { useRouter } from 'vue-router';
 const recipeStore = useRecipeStore();
 const router = useRouter();
 
-// 简单的响应式表单数据
-// Ingredients/Instructions 使用对象数组 {value: ''} 是为了 v-for 绑定 key 时更稳定
 const form = reactive({
     title: '',
     category: 'Dinner',
@@ -234,7 +232,6 @@ const processFile = (file) => {
     reader.readAsDataURL(file);
 };
 
-// --- 动态数组处理 ---
 const addIngredient = () => form.ingredients.push({ value: '' });
 const removeIngredient = (index) => form.ingredients.splice(index, 1);
 
@@ -244,9 +241,7 @@ const removeInstruction = (index) => form.instructions.splice(index, 1);
 const addTag = () => form.tags.push({ value: '' });
 const removeTag = (index) => form.tags.splice(index, 1);
 
-// --- 提交 ---
 const handleSubmit = async () => {
-    // 简单的校验：去掉空的条目
     const cleanData = {
         ...form,
         ingredients: form.ingredients.filter(i => i.value.trim() !== ''),
@@ -262,7 +257,6 @@ const handleSubmit = async () => {
     const result = await recipeStore.createRecipe(cleanData);
 
     if (result) {
-        // 创建成功，跳转到详情页 (我们还没做详情页，暂时跳回首页)
         alert('Recipe Created Successfully!');
         router.push('/');
     }

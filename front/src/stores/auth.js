@@ -16,7 +16,7 @@ export const useAuthStore = defineStore('auth', {
 
     actions: {
         async register(userData) {
-            console.log('当前环境API地址:', import.meta.env.VITE_API_URL);
+            console.log('api:', import.meta.env.VITE_API_URL);
 
             this.loading = true;
             this.error = null;

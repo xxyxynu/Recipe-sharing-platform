@@ -1,6 +1,5 @@
 <template>
     <div class="page-container">
-        <!-- 顶部区域 -->
         <div class="header-section">
             <h1>Discover Recipes</h1>
             <div class="search-wrapper">
@@ -10,7 +9,6 @@
             </div>
         </div>
 
-        <!-- 筛选栏 -->
         <div class="filter-section">
             <div class="categories">
                 <button v-for="cat in categories" :key="cat" @click="selectCategory(cat)"
@@ -25,23 +23,19 @@
             </button>
         </div>
 
-        <!-- 加载中 -->
         <div v-if="recipeStore.loading && recipeStore.recipes.length === 0" class="loading-container">
             <div class="spinner"></div>
         </div>
 
-        <!-- 列表 (带动画) -->
         <TransitionGroup v-else name="list" tag="div" class="recipe-grid">
             <RecipeCard v-for="recipe in recipeStore.recipes" :key="recipe._id" :recipe="recipe" class="grid-item"
                 @click="goToDetail(recipe._id)" />
         </TransitionGroup>
 
-        <!-- 空状态 -->
         <div v-if="!recipeStore.loading && recipeStore.recipes.length === 0" class="empty-state">
             <p>No recipes found.</p>
         </div>
 
-        <!-- 加载更多 -->
         <div v-if="hasMore" class="load-more-container">
             <button @click="loadMore" :disabled="recipeStore.loading" class="btn-outline">
                 Load More

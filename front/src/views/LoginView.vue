@@ -33,7 +33,6 @@
 </template>
 
 <script setup>
-// Script 保持不变
 import { ref } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';

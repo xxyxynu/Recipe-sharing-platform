@@ -74,7 +74,7 @@
 
                     <!-- 名字 -->
                     <h3 class="text-xl font-bold text-gray-900 group-hover:text-emerald-600 transition">{{ chef.username
-                    }}</h3>
+                        }}</h3>
 
                     <!-- 简介 -->
                     <p class="text-gray-500 text-sm mt-2 mb-4 line-clamp-2 h-10 w-full px-2">
@@ -131,17 +131,13 @@ const router = useRouter();
 const searchQuery = ref('');
 const activeTab = ref('all'); // all | following
 
-// 🔥 核心逻辑：根据 Tab 筛选显示的厨师
 const filteredChefs = computed(() => {
-    // 1. 获取所有（可能是搜索后的结果）
     let list = chefStore.chefs;
 
-    // 2. 如果当前 Tab 是 'following'，则只过滤出我关注的
     if (activeTab.value === 'following') {
         if (!authStore.isAuthenticated || !authStore.user?.following) {
-            return []; // 没登录或没关注，返回空
+            return [];
         }
-        // 筛选逻辑：厨师的 ID 必须在我的 following 数组里
         list = list.filter(chef => authStore.user.following.includes(chef._id));
     }
 
@@ -149,18 +145,15 @@ const filteredChefs = computed(() => {
 });
 
 onMounted(() => {
-    // 初始加载所有厨师
     chefStore.fetchAllChefs();
 });
 
 const handleSearch = () => {
-    // 搜索时，无论在哪个 Tab，都去后端搜，搜完后 computed 会自动过滤
     chefStore.fetchAllChefs(searchQuery.value);
 };
 
 const isFollowing = (chef) => {
     if (!authStore.user || !authStore.user.following) return false;
-    // 使用“我的关注列表”来判断，比用“厨师的粉丝列表”更准确，因为这是我们 store 里实时更新的数据
     return authStore.user.following.includes(chef._id);
 };
 

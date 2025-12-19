@@ -1,14 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 
-// 这里不需要再定义 const Home = { template: ... } 这种代码了
-// 我们直接在 routes 里引入 .vue 文件
-
 const routes = [
     {
         path: '/',
         name: 'Home',
-        // 使用懒加载引入我们在 views 文件夹下创建的 HomeView.vue
         component: () => import('../views/HomeView.vue')
     },
     {
@@ -68,6 +64,11 @@ const routes = [
         name: 'ChefProfile',
         component: () => import('../views/ChefProfileView.vue')
     },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () => import('../views/NotFoundView.vue')
+    }
 ];
 
 const router = createRouter({

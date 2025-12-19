@@ -80,19 +80,15 @@ onMounted(async () => {
 });
 
 const handleUpdate = async () => {
-    // 构造发送给后端的数据 (类似 createRecipe)
     const formData = new FormData();
     formData.append('title', form.title);
     formData.append('description', form.description);
-    // ... 添加其他字段 (category, times, etc) ...
 
-    // 处理数组
     form.ingredients.forEach(i => formData.append('ingredients', i.value));
     form.instructions.forEach(i => formData.append('instructions', i.value));
     const tagValues = form.tags.map(t => t.value);
     formData.append('tags', JSON.stringify(tagValues));
 
-    // 如果没选新图片，就不传 image 字段，后端会保留原图
     if (form.imageFile) {
         formData.append('image', form.imageFile);
     }

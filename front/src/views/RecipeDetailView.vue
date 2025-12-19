@@ -4,8 +4,6 @@
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
     </div>
 
-    <!-- 2. 错误状态 (Error) -->
-    <!-- 如果 store 里有 error，或者 recipe 是空的，显示错误信息 -->
     <div v-else-if="error || !recipe" class="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
         <div class="text-red-500 text-6xl mb-4">⚠️</div>
         <h2 class="text-2xl font-bold text-gray-800 mb-2">Oops! Something went wrong</h2>
@@ -15,8 +13,6 @@
         </router-link>
     </div>
 
-    <!-- 3. 正常内容状态 (Content) -->
-    <!-- 只有当 loading 为 false 且 recipe 存在且没有 error 时才渲染 -->
     <div v-else class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
 
         <!-- 顶部大图与标题 -->
@@ -46,9 +42,9 @@
                                     <span>By {{ recipe.author?.username || 'Unknown' }}</span>
                                 </div>
                                 <span class="mx-3">•</span>
-                                <span :title="timeAgo(recipe.createdAt)">
+                                <span :title="relativeTime">
                                     {{ formatDate(recipe.createdAt) }}
-                                    <span class="text-xs text-gray-400 ml-1">({{ timeAgo(recipe.createdAt) }})</span>
+                                    <span class="text-xs text-gray-400 ml-1">({{ relativeTime }})</span>
                                 </span>
                             </div>
                         </div>
@@ -207,7 +203,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, reactive, watch } from 'vue';
+import { onMounted, onUnmounted, computed, reactive, watch, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useRecipeStore } from '../stores/recipe';
 import { useAuthStore } from '../stores/auth';
@@ -229,35 +225,50 @@ const reviewForm = reactive({
     comment: ''
 });
 
-// 从 store 获取状态
 const recipe = computed(() => recipeStore.currentRecipe);
 const loading = computed(() => recipeStore.loading);
 const error = computed(() => recipeStore.error);
 
-// 2. 初始化获取数据
+const timeRefreshTimer = ref(null);
+const timeRefreshCounter = ref(0);
+
+const relativeTime = computed(() => {
+    void timeRefreshCounter.value;
+    if (recipe.value?.createdAt) {
+        return timeAgo(recipe.value.createdAt);
+    }
+    return '';
+});
+
 onMounted(() => {
     if (recipeId && recipeId !== 'undefined') {
         recipeStore.fetchRecipeById(recipeId);
     } else {
-        // 如果 URL 是 /recipe/undefined，直接报错，不要请求后端
         recipeStore.error = "Invalid Recipe ID";
         recipeStore.loading = false;
     }
+
+    timeRefreshTimer.value = setInterval(() => {
+        timeRefreshCounter.value++;
+    }, 60000);
 });
 
-// 监听路由变化（比如从热门点击推荐菜谱）
+onUnmounted(() => {
+    if (timeRefreshTimer.value) {
+        clearInterval(timeRefreshTimer.value);
+        timeRefreshTimer.value = null;
+    }
+});
+
 watch(() => route.params.id, (newId) => {
     if (newId && newId !== 'undefined') {
         recipeStore.fetchRecipeById(newId);
     }
 });
 
-// 3. 收藏状态计算属性 (防御性编程)
 const isFavorited = computed(() => {
-    // 如果没登录，或者菜谱没加载完，或者菜谱本身没有 favorites 字段
     if (!authStore.user || !recipe.value || !recipe.value.favorites) return false;
 
-    // 确保它是数组
     if (!Array.isArray(recipe.value.favorites)) return false;
 
     const currentUserId = authStore.user.id || authStore.user._id;
@@ -267,12 +278,10 @@ const isFavorited = computed(() => {
 });
 
 
-// 图片加载失败的回退
 const handleImageError = (e) => {
     e.target.src = 'https://placehold.co/800x600?text=Food';
 };
 
-// 5. 交互动作
 const handleFavorite = async () => {
     if (!authStore.isAuthenticated) {
         if (confirm('You need to login to add favorites. Go to login?')) {
@@ -286,7 +295,6 @@ const handleFavorite = async () => {
 const submitReview = async () => {
     if (!reviewForm.comment.trim()) return;
 
-    // 乐观更新或等待刷新
     const success = await recipeStore.addReview(recipe.value._id, {
         rating: reviewForm.rating,
         comment: reviewForm.comment
@@ -325,7 +333,6 @@ const submitReview = async () => {
     animation: heartPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* 自定义滚动条样式*/
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
 }

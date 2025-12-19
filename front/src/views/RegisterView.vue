@@ -76,7 +76,6 @@ const handleRegister = async () => {
     });
 
     if (success) {
-        // 注册成功后，你的后端直接返回 token，所以视为已登录，跳转首页
         router.push('/');
     }
 };

@@ -66,13 +66,9 @@
             </div>
         </div>
 
-        <!-- 2. 🔥🔥🔥 导航 Tabs 改为 RouterLink 🔥🔥🔥 -->
         <div class="border-b border-gray-200 mb-6">
             <nav class="-mb-px flex space-x-8">
-                <!-- 
-                     active-class="border-emerald-500 text-emerald-600"
-                     这个属性让 Vue Router 自动处理激活状态的样式
-                -->
+
                 <router-link to="/profile/recipes" active-class="border-emerald-500 text-emerald-600"
                     class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300">
                     My Recipes
@@ -85,8 +81,6 @@
             </nav>
         </div>
 
-        <!-- 3. 🔥🔥🔥 嵌套路由出口 🔥🔥🔥 -->
-        <!-- 子页面的内容（MyRecipes 或 MyFavorites）会显示在这里 -->
         <router-view></router-view>
 
     </div>
@@ -95,14 +89,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
-import { useRecipeStore } from '../stores/recipe'; // 依然需要它来显示上面的统计数字
-// 引入 helper
+import { useRecipeStore } from '../stores/recipe';
 import { getImageUrl } from '../utils/imageHelper';
 
 const authStore = useAuthStore();
 const recipeStore = useRecipeStore();
-// 不需要 useRouter 了，导航交给 router-link
-// 不需要 activeTab 了，路由决定显示什么
 
 const fileInput = ref(null);
 const isEditing = ref(false);
@@ -110,11 +101,9 @@ const editName = ref('');
 
 onMounted(async () => {
     await authStore.fetchUser();
-    // 这里的 fetchMyRecipes 可以保留，以便上面显示 Recipes 数量统计
     await recipeStore.fetchMyRecipes();
 });
 
-// 头像处理
 const triggerUpload = () => fileInput.value.click();
 const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
@@ -123,7 +112,6 @@ const handleAvatarChange = async (e) => {
     }
 };
 
-// 个人信息修改
 const startEdit = () => {
     editName.value = authStore.user.username;
     isEditing.value = true;
